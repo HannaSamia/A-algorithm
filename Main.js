@@ -33,6 +33,8 @@ var w,h;
 
 var path = []; // at the end this is the best path
 
+var noSolution = false; //  I need this cause i can't break from the draw loop
+
 
 function Node(i,j){
     this.i = i;
@@ -46,8 +48,17 @@ function Node(i,j){
 
     this.previous = undefined; // the node that i came from || parent node
 
+    this.wall = false;
+
+    if(random(1)<0.4){
+        this.wall = true;
+    }
+
     this.show = function(color){
         fill(color);
+        if(this.wall){
+            fill(0);
+        }
         noStroke();
         rect(this.i * w,this.j * h,w - 1,h - 1);
     }
@@ -67,6 +78,18 @@ function Node(i,j){
         }
         if(j>0){
             this.neighbors.push(grid[i][j-1]);
+        }
+        if (i > 0 && j > 0) {
+            this.neighbors.push(grid[i - 1][j - 1]);
+        }
+        if (i < cols - 1 && j > 0) {
+            this.neighbors.push(grid[i + 1][j - 1]);
+        }
+        if (i > 0 && j < rows - 1) {
+            this.neighbors.push(grid[i - 1][j + 1]);
+        }
+        if (i < cols - 1 && j < rows - 1) {
+            this.neighbors.push(grid[i + 1][j + 1]);
         }
     }
 }
@@ -103,6 +126,9 @@ function setup(){
     
     start = grid[0][0]; //start Node
     end = grid[cols-1][rows-1]; //end Node
+
+    start.wall=false;//so that the start is never a wall
+    end.wall = false;//so that the end is never a wall
 
     openSet.push(start); //we start with the first node
 
@@ -141,7 +167,7 @@ function draw(){
             var neighbor = neighbors[i];
 
             //while the neighbor node isn't in the closed Set we continue 
-            if(!closedSet.includes(neighbor)){
+            if(!closedSet.includes(neighbor) && !neighbor.wall){//and if the neighbor is not a wall 
                 var tempG = currentVal.g +1;
 
                 //if neighbor in openset we evaluate it g with the calcuated tempG
@@ -165,7 +191,9 @@ function draw(){
         }
 
     }else{
-
+        noSolution = true;
+        noLoop();
+        console.log("DIDN't FIND IT : NO SOLUTION !");
     }
 
     background(0);
@@ -186,13 +214,16 @@ function draw(){
     }
 
     //find the path and fill it something similar to a linked list
-    path = [];
-    var temp = currentVal;
-    path.push(temp);
-    while(temp.previous){
-        path.push(temp.previous);
-        temp = temp.previous;
+    if(!noSolution){
+        path = [];
+        var temp = currentVal;
+        path.push(temp);
+        while(temp.previous){
+            path.push(temp.previous);
+            temp = temp.previous;
+        }
     }
+
 
     for(var i = 0; i<path.length; i++){
         path[i].show(color(0,0,155));

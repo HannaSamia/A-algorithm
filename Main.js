@@ -6,8 +6,19 @@ function removeFromArray(array,element){
     }
 }
 
-var cols = 5;
-var rows = 5;
+function  heuristic(a,b){
+    // p5 has a function called dist it will calculate the Euclidean distance in 2D or 3D
+    // https://www.geeksforgeeks.org/p5-js-dist-function/
+    // var di = dist(a.i,a.j,b.i,b.j);
+
+
+    //Here we are using the Manhattan distance
+    var di = abs(a.i - b.i) + abs(a.j - b.j)
+    return di;
+}
+
+var cols = 25;
+var rows = 25;
 var grid = Array(cols);
 
 // var width = 400;
@@ -20,6 +31,8 @@ var end;
 
 var w,h;
 
+var path = []; // at the end this is the best path
+
 
 function Node(i,j){
     this.i = i;
@@ -31,10 +44,12 @@ function Node(i,j){
 
     this.neighbors = []; //let each node keep track of it neighbors
 
+    this.previous = undefined; // the node that i came from || parent node
+
     this.show = function(color){
         fill(color);
         noStroke();
-        rect(this.i*w,this.j*h,w-1,h-1);
+        rect(this.i * w,this.j * h,w - 1,h - 1);
     }
 
     this.addNeighbors = function(grid){
@@ -71,14 +86,14 @@ function setup(){
     }
 
     for(var i = 0; i<cols; i++){
-        for(var j=0;j<rows;j++){
-            grid[i][j] = new Node(i,j)
+        for(var j=0; j<rows; j++){
+            grid[i][j] = new Node(i,j);
             // grid[i][j].addNeighbors(grid); // problem here i can add neighbors while filling the grid, not all the values are ready
         }
     }
 
     for(var i = 0; i<cols; i++){
-        for(var j=0;j<rows;j++){
+        for(var j=0; j<rows; j++){
              grid[i][j].addNeighbors(grid);
         }
     }
@@ -111,8 +126,10 @@ function draw(){
 
         var currentVal = openSet[currentIndex];
 
-        if(currentVal == end){
-            Console.log("FOUND IT : DONE !!!")
+        if(currentVal === end){
+            
+            noLoop();
+            console.log("FOUND IT : DONE !!!")
         }
 
        // openSet.remove(currentVal) not such function in js
@@ -121,24 +138,29 @@ function draw(){
 
         var neighbors = currentVal.neighbors;
         for(var i=0 ; i<neighbors.length;i++){
-            var neighborsValue = neighbors[i];
+            var neighbor = neighbors[i];
 
             //while the neighbor node isn't in the closed Set we continue 
-            if(!closedSet.includes(neighborsValue)){
+            if(!closedSet.includes(neighbor)){
                 var tempG = currentVal.g +1;
 
                 //if neighbor in openset we evaluate it g with the calcuated tempG
                 //if its lower then this is the better path 
-                if(openSet.includes(neighborsValue)){
-                    if(tempG < neighborsValue.g){
-                        neighborsValue.g = tempG;
+                if(openSet.includes(neighbor)){
+                    if(tempG < neighbor.g){
+                        neighbor.g = tempG;
                     }
                 }
                 else{
                     //we add the neighbor to the open Set
-                    neighborsValue.g = tempG;
-                    openSet.push(neighbors)
+                    neighbor.g = tempG;
+                    openSet.push(neighbor)
                 }
+                // need to guess how much it will take me to get to the end
+                neighbor.h = heuristic(neighbor,end);
+                neighbor.f = neighbor.g + neighbor.h
+                neighbor.previous = currentVal;
+
             }
         }
 
@@ -161,7 +183,19 @@ function draw(){
 
     for(var i = 0; i<openSet.length; i++){
         openSet[i].show(color(0,255,0));
+    }
 
+    //find the path and fill it something similar to a linked list
+    path = [];
+    var temp = currentVal;
+    path.push(temp);
+    while(temp.previous){
+        path.push(temp.previous);
+        temp = temp.previous;
+    }
+
+    for(var i = 0; i<path.length; i++){
+        path[i].show(color(0,0,155));
     }
 
 }

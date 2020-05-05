@@ -17,8 +17,8 @@ function  heuristic(a,b){
     return di;
 }
 
-var cols = 50;
-var rows = 50;
+var cols = 30;
+var rows = 30;
 var grid = Array(cols);
 
 // var width = 400;
@@ -229,5 +229,13 @@ function draw(){
     for(var i = 0; i<path.length; i++){
         path[i].show(color(0,0,155));
     }
+
+    noFill();
+    stroke(255);
+    beginShape();
+        for(var i = 0; i<path.length; i++){
+            vertex(path[i].i*w,path[i].j*h)
+        }
+    endShape();
 
 }

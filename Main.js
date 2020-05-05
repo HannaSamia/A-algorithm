@@ -17,8 +17,8 @@ function  heuristic(a,b){
     return di;
 }
 
-var cols = 30;
-var rows = 30;
+var cols = 50;
+var rows = 50;
 var grid = Array(cols);
 
 // var width = 400;
@@ -32,66 +32,6 @@ var end;
 var w,h;
 
 var path = []; // at the end this is the best path
-
-
-function Node(i,j){
-    this.i = i;
-    this.j = j;
-
-    this.f = 0;
-    this.g = 0;
-    this.h = 0;
-
-    this.neighbors = []; //let each node keep track of it neighbors
-
-    this.previous = undefined; // the node that i came from || parent node
-
-    this.wall = false;
-
-    if(random(1)<0.3){
-        this.wall = true;
-    }
-
-    this.show = function(color){
-        fill(color);
-        if(this.wall){
-            fill(0);
-        }
-        noStroke();
-        rect(this.i * w,this.j * h,w - 1,h - 1);
-    }
-
-    this.addNeighbors = function(grid){
-        var i = this.i;
-        var j = this.j;
-        
-        if(i<cols-1){
-            this.neighbors.push(grid[i+1][j]);
-        }
-        if(i > 0){
-            this.neighbors.push(grid[i-1][j]);
-        }
-        if(j<rows-1){
-            this.neighbors.push(grid[i][j+1]);
-        }
-        if(j>0){
-            this.neighbors.push(grid[i][j-1]);
-        }
-        if (i > 0 && j > 0) {
-            this.neighbors.push(grid[i - 1][j - 1]);
-        }
-        if (i < cols - 1 && j > 0) {
-            this.neighbors.push(grid[i + 1][j - 1]);
-        }
-        if (i > 0 && j < rows - 1) {
-            this.neighbors.push(grid[i - 1][j + 1]);
-        }
-        if (i < cols - 1 && j < rows - 1) {
-            this.neighbors.push(grid[i + 1][j + 1]);
-        }
-    }
-}
-
 
 
 
@@ -199,7 +139,7 @@ function draw(){
         return;
     }
 
-    background(0);
+    background(255);
 
     for(var i = 0; i<cols; i++){
         for(var j=0;j<rows;j++){
@@ -207,14 +147,16 @@ function draw(){
         }
     }
 
-    for(var i = 0; i<closedSet.length; i++){
-        closedSet[i].show(color(255,0,0));
+    ////Show  Visited nodes
+    // for(var i = 0; i<closedSet.length; i++){
+    //     closedSet[i].show(color(255,0,0));
 
-    }
+    // }
 
-    for(var i = 0; i<openSet.length; i++){
-        openSet[i].show(color(0,255,0));
-    }
+    ////Show discovered nodes
+    // for(var i = 0; i<openSet.length; i++){
+    //     openSet[i].show(color(0,255,0));
+    // }
 
     //find the path and fill it something similar to a linked list
         path = [];
@@ -225,16 +167,18 @@ function draw(){
             temp = temp.previous;
         }
 
-
-    for(var i = 0; i<path.length; i++){
-        path[i].show(color(0,0,155));
-    }
+    ////Show final path
+    // for(var i = 0; i<path.length; i++){
+    //     path[i].show(color(0,0,155));
+    // }
 
     noFill();
-    stroke(255);
+    stroke(255,0,200);
+    strokeWeight(w/2);
     beginShape();
         for(var i = 0; i<path.length; i++){
-            vertex(path[i].i*w,path[i].j*h)
+            // vertex(path[i].i*w,path[i].j*h)
+            vertex(path[i].i*w + w/2,path[i].j*h +h/2)//concider the line in the center
         }
     endShape();
 

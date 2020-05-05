@@ -33,8 +33,6 @@ var w,h;
 
 var path = []; // at the end this is the best path
 
-var noSolution = false; //  I need this cause i can't break from the draw loop
-
 
 function Node(i,j){
     this.i = i;
@@ -191,9 +189,9 @@ function draw(){
         }
 
     }else{
-        noSolution = true;
-        noLoop();
         console.log("DIDN't FIND IT : NO SOLUTION !");
+        noLoop();
+        return;
     }
 
     background(0);
@@ -214,7 +212,6 @@ function draw(){
     }
 
     //find the path and fill it something similar to a linked list
-    if(!noSolution){
         path = [];
         var temp = currentVal;
         path.push(temp);
@@ -222,7 +219,6 @@ function draw(){
             path.push(temp.previous);
             temp = temp.previous;
         }
-    }
 
 
     for(var i = 0; i<path.length; i++){

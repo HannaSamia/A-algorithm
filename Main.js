@@ -9,16 +9,16 @@ function removeFromArray(array,element){
 function  heuristic(a,b){
     // p5 has a function called dist it will calculate the Euclidean distance in 2D or 3D
     // https://www.geeksforgeeks.org/p5-js-dist-function/
-    // var di = dist(a.i,a.j,b.i,b.j);
+    var di = dist(a.i,a.j,b.i,b.j);
 
 
     //Here we are using the Manhattan distance
-    var di = abs(a.i - b.i) + abs(a.j - b.j)
+    // var di = abs(a.i - b.i) + abs(a.j - b.j)
     return di;
 }
 
-var cols = 25;
-var rows = 25;
+var cols = 50;
+var rows = 50;
 var grid = Array(cols);
 
 // var width = 400;
@@ -48,7 +48,7 @@ function Node(i,j){
 
     this.wall = false;
 
-    if(random(1)<0.4){
+    if(random(1)<0.3){
         this.wall = true;
     }
 
@@ -170,20 +170,25 @@ function draw(){
 
                 //if neighbor in openset we evaluate it g with the calcuated tempG
                 //if its lower then this is the better path 
+                var isNewPath = false;
                 if(openSet.includes(neighbor)){
                     if(tempG < neighbor.g){
                         neighbor.g = tempG;
+                        isNewPath = true;
                     }
                 }
                 else{
                     //we add the neighbor to the open Set
                     neighbor.g = tempG;
+                    isNewPath = true;
                     openSet.push(neighbor)
                 }
                 // need to guess how much it will take me to get to the end
-                neighbor.h = heuristic(neighbor,end);
-                neighbor.f = neighbor.g + neighbor.h
-                neighbor.previous = currentVal;
+                if(isNewPath){
+                    neighbor.h = heuristic(neighbor,end);
+                    neighbor.f = neighbor.g + neighbor.h
+                    neighbor.previous = currentVal;
+                }
 
             }
         }
